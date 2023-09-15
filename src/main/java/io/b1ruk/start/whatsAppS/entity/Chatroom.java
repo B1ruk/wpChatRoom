@@ -20,6 +20,13 @@ public class Chatroom {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "createdBy_id", nullable = false)
+    private Participant chatCreatedBy;
+
+    @Column(name = "max_participant")
+    private Integer maxParticipantCount;
+
     @OneToMany(mappedBy = "chatroom", cascade = CascadeType.ALL)
     private List<ChatroomParticipant> chatroomParticipants;
 }

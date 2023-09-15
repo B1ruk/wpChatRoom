@@ -18,8 +18,9 @@ public class MediaAttachment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "message_id", nullable = false)
-    private Long messageId;
+    @ManyToOne
+    @JoinColumn(name = "message_id")
+    private Message message;
 
     @Column(name = "type", nullable = false)
     private String type;

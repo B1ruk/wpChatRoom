@@ -21,7 +21,7 @@ public class Participant {
     @Column(name = "phone_id", nullable = false, unique = true)
     private String phoneId;
 
-    @ManyToMany(mappedBy = "participants")
-    private List<Chatroom> chatrooms;
+    @OneToMany(mappedBy = "chatCreatedBy")
+    private List<Chatroom> createdChatRooms;
 }
 
