@@ -99,7 +99,7 @@ public class MessageService {
                 .buildVideoMessage(videoMessage);
 
 
-        MessageResponse messageResponse = whatsappBusinessCloudApi.sendMessage(chatroomEntity.getName(), message)
+        MessageResponse messageResponse = whatsappBusinessCloudApi.sendMessage(chatroomEntity.getName(), message);
     }
 
     public void sendMessage(MessageDTO messageDTO, Participant participantModel, ChatroomEntity chatroomEntity) {
