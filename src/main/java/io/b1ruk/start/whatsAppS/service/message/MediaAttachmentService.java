@@ -5,6 +5,7 @@ import io.b1ruk.start.whatsAppS.entity.MediaType;
 import io.b1ruk.start.whatsAppS.entity.Message;
 import io.b1ruk.start.whatsAppS.repository.MediaAttachmentRepository;
 import io.b1ruk.start.whatsAppS.repository.MessageRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -36,6 +37,9 @@ public class MediaAttachmentService {
     @Value("${file.dir.picture}")
     private String pictureUploadDirectory;
 
+    @Value("${video.size.min}")
+    private Long minVideoSize;
+
     @EventListener(ApplicationReadyEvent.class)
     public void createUploadDirectory() throws IOException {
         createFolder(Path.of(videoUploadDirectory));
@@ -47,7 +51,7 @@ public class MediaAttachmentService {
     public ResponseEntity<MediaAttachment> uploadMediaAsset(Long messageId, MultipartFile file, MediaType mediaType) throws IOException {
         Message message = messageRepository.findById(messageId).orElseThrow(() -> new RuntimeException("unable to find file"));
 
-        var filePath=uploadFile(file, mediaType);
+        var filePath = uploadFile(file, mediaType);
 
         MediaAttachment mediaAttachment = MediaAttachment.builder()
                 .message(message)
@@ -63,6 +67,22 @@ public class MediaAttachmentService {
 
     public String uploadFile(MultipartFile file, MediaType mediaType) throws IOException {
         var uploadDirectory = mediaType.equals(MediaType.PICTURE) ? pictureUploadDirectory : videoUploadDirectory;
+
+        if (mediaType.equals(MediaType.VIDEO)) {
+            var fileSize = file.getBytes().length / (1024 * 1024);
+
+            if (fileSize >= minVideoSize) {
+                return uploadFile(file, uploadDirectory);
+            } else {
+                throw new IllegalStateException("Video size is not suitable for this service");
+            }
+        }
+        return uploadFile(file, uploadDirectory);
+
+    }
+
+    @NotNull
+    private static String uploadFile(MultipartFile file, String uploadDirectory) throws IOException {
         Path destination = Path.of(uploadDirectory, file.getOriginalFilename());
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
 
