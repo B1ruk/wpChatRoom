@@ -1,6 +1,7 @@
 package io.b1ruk.start.whatsAppS.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,6 +21,7 @@ public class MediaAttachment {
 
     @ManyToOne
     @JoinColumn(name = "message_id")
+    @JsonIgnore
     private Message message;
 
     @Column(name = "type", nullable = false)
