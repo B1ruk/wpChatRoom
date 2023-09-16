@@ -24,8 +24,9 @@ public class MediaAttachment {
     @JsonIgnore
     private Message message;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    private String type;
+    private MediaType type;
 
     @Column(name = "url", nullable = false)
     private String url;
