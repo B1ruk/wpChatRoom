@@ -20,8 +20,8 @@ public class ChatRoomController {
     }
 
     @PutMapping("leaveChatRoom")
-    public ResponseEntity<ChatParticipantDTO> leaveChatRoom(@RequestBody ChatRoomDTO chatRoomDTO){
-     return chatRoomService.leaveChatRoom(chatRoomDTO);
+    public ResponseEntity<ChatParticipantDTO> leaveChatRoom(@RequestBody ChatRoomDTO chatRoomDTO,@RequestParam("participantId") Long participantId){
+     return chatRoomService.leaveChatRoom(chatRoomDTO,participantId);
     }
 
 
