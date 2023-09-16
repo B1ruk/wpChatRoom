@@ -11,14 +11,17 @@ import io.b1ruk.start.whatsAppS.repository.ChatroomRepository;
 import io.b1ruk.start.whatsAppS.repository.MediaAttachmentRepository;
 import io.b1ruk.start.whatsAppS.repository.MessageRepository;
 import io.b1ruk.start.whatsAppS.repository.ParticipantRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Service
+@Slf4j
 public class MessageService {
 
     @Autowired
@@ -50,7 +53,7 @@ public class MessageService {
 
         messageRepository.save(message);
 
-        if (!messageDTO.getMediaAttachments().isEmpty()) {
+        if (!messageDTO.getMediaAttachments().isEmpty() && Objects.nonNull(messageDTO.getId())) {
             sendMediaAttachments(messageDTO, participantModel, chatroomEntity);
         } else {
             sendMessage(messageDTO, participantModel, chatroomEntity);
@@ -62,7 +65,9 @@ public class MessageService {
     }
 
     private void sendMediaAttachments(MessageDTO messageDTO, Participant participantModel, ChatroomEntity chatroomEntity) {
-        messageDTO.getMediaAttachments()
+        var mediaAttachments = mediaAttachmentRepository.findByMessageId(messageDTO.getId());
+
+        mediaAttachments
                 .forEach(mediaAttachment -> {
                     if (mediaAttachment.getType().equals(MediaType.PICTURE)) {
                         sendImage(mediaAttachment, participantModel, chatroomEntity);
@@ -77,6 +82,7 @@ public class MessageService {
         MediaAttachment attachmentModel = mediaAttachmentRepository.save(mediaAttachment);
 
         var imageMessage = new ImageMessage()
+                .setLink(mediaAttachment.getUrl())
                 .setId(attachmentModel.getId().toString());
 
         var message = com.whatsapp.api.domain.messages.Message.MessageBuilder.builder()
@@ -85,6 +91,7 @@ public class MessageService {
 
 
         MessageResponse messageResponse = whatsappBusinessCloudApi.sendMessage(chatroomEntity.getName(), message);
+        log.info("messageResponse {}", messageResponse.messagingProduct());
     }
 
     private void sendVideo(MediaAttachment mediaAttachment, Participant participantModel, ChatroomEntity chatroomEntity) {
@@ -92,6 +99,7 @@ public class MessageService {
         MediaAttachment attachmentModel = mediaAttachmentRepository.save(mediaAttachment);
 
         var videoMessage = new VideoMessage()
+                .setLink(mediaAttachment.getUrl())
                 .setId(attachmentModel.getId().toString());
 
         var message = com.whatsapp.api.domain.messages.Message.MessageBuilder.builder()//
@@ -100,6 +108,7 @@ public class MessageService {
 
 
         MessageResponse messageResponse = whatsappBusinessCloudApi.sendMessage(chatroomEntity.getName(), message);
+        log.info("messageResponse {}", messageResponse.messagingProduct());
     }
 
     public void sendMessage(MessageDTO messageDTO, Participant participantModel, ChatroomEntity chatroomEntity) {
