@@ -22,6 +22,6 @@ public class Participant {
     private String phoneId;
 
     @OneToMany(mappedBy = "chatCreatedBy")
-    private List<Chatroom> createdChatRooms;
+    private List<ChatroomEntity> createdChatRooms;
 }
 

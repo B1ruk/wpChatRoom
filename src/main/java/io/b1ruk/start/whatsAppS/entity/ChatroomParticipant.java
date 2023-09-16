@@ -18,9 +18,14 @@ public class ChatroomParticipant {
 
     @ManyToOne
     @JoinColumn(name = "chatroom_id", nullable = false)
-    private Chatroom chatroom;
+    private ChatroomEntity chatroom;
 
     @ManyToOne
     @JoinColumn(name = "participant_id", nullable = false)
     private Participant participant;
+
+    public ChatroomParticipant(ChatroomEntity chatroom, Participant participant) {
+        this.chatroom = chatroom;
+        this.participant = participant;
+    }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Chatroom {
+public class ChatroomEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +29,10 @@ public class Chatroom {
 
     @OneToMany(mappedBy = "chatroom", cascade = CascadeType.ALL)
     private List<ChatroomParticipant> chatroomParticipants;
+
+    public ChatroomEntity(String name, Participant chatCreatedBy, Integer maxParticipantCount) {
+        this.name = name;
+        this.chatCreatedBy = chatCreatedBy;
+        this.maxParticipantCount = maxParticipantCount;
+    }
 }
