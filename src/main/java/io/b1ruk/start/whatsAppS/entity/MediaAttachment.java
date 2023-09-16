@@ -11,6 +11,7 @@ import java.util.Date;
 @Table(name = "media_attachments")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MediaAttachment {
